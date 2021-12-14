@@ -15,6 +15,6 @@ for i in range(100):
 
         totalReward += reward
 
-    print('Episode', i,', Total reward:', totalReward)
+    print('Episode', i, ', Total reward:', totalReward)
 
 env.close()
