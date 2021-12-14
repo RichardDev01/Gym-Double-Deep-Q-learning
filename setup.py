@@ -2,6 +2,9 @@ import setuptools
 
 install_requires = [
     'numpy',
+    'gym',
+    'pyglet',
+    'box2d',
 ]
 
 extras = {

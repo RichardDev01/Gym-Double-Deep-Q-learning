@@ -10,3 +10,11 @@ If you are a developer you need to run this command:
 ```bash 
 pip install .[dev]
 ```
+
+# Lunar Lander
+
+to run the script use the following command from root
+
+```bash
+python gym/lunar-lander/lunar_start.py
+```
