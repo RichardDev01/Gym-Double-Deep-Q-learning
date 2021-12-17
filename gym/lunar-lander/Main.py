@@ -6,7 +6,7 @@ from Transition import Transition
 import gym
 
 
-def train(episodes: int):
+def train(episodes: int, batch_size: int):
     memory = Memory(size=1000)
     env = gym.make("LunarLander-v2")
 
@@ -24,31 +24,34 @@ def train(episodes: int):
 
     # action = agent.get_action(state)
     # print(action)
-    # episode = 0
-    # for i in range(episodes):
-    #     # Initialize S
-    #     state = env.reset()
-    #     done = False
-    #     while not done:
-    #         # Choose A from S using policy derived from Q (e.g., ε-greedy)
-    #         env.render()
-    #         action = agent.get_action(state)
-    #
-    #         # Take action A, observe R, S'
-    #         next_state, reward, done, info = env.step(action)
-    #
-    #         # add sarsa to memory
-    #         memory.append_record(Transition(state, action, reward, done, next_state))
-    #
-    #         state = next_state
-    #     print(memory.sample())
+    episode = 0
+    for i in range(episodes):
+        # Initialize S
+        state = env.reset()
+        done = False
+        while not done:
+            # Choose A from S using policy derived from Q (e.g., ε-greedy)
+            env.render()
+            action = agent.get_action(state)
 
-    print(agent.primary_network.parameters())
-    for param in agent.primary_network.parameters():
-        print(param)
+            # Take action A, observe R, S'
+            next_state, reward, done, info = env.step(action)
+
+            # add sarsa to memory
+            memory.append_record(Transition(state, action, reward, done, next_state))
+
+            state = next_state
+        if memory.get_deque_len() >= batch_size:
+            batch = memory.sample(batch_size)
+
+        print(memory.sample())
+
+    # print(agent.primary_network.parameters())
+    # for param in agent.primary_network.parameters():
+    #     print(param)
 
 if __name__== "__main__":
-    train(episodes = 10)
+    train(episodes = 10, batch_size = 10)
     # env = gym.make('LunarLander-v2')
     #
     # state = env.reset()
