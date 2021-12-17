@@ -15,7 +15,7 @@ def train(episodes: int):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0.7, batchsize=10, learning_rate=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, learning_rate=1,
                   model_input_size=observation_length, model_output_size=total_actions)
 
     agent.load_model('default_primary_name', 'default_target_name')
@@ -23,16 +23,17 @@ def train(episodes: int):
     action = agent.get_action(state)
     print(action)
     # episode = 0
-    # for i in range(episodes):
-    #     # Initialize S
-    #     state = env.reset()
-    #
-    #     while not env.done:
-    #         # Choose A from S using policy derived from Q (e.g., ε-greedy)
-    #         action = agent.get_action(state)
-    #
-    #         # Take action A, observe R, S'
-    #         observation, reward, done, info = env.step(action)
+    for i in range(episodes):
+        # Initialize S
+        state = env.reset()
+        done = False
+        while not done:
+            # Choose A from S using policy derived from Q (e.g., ε-greedy)
+            env.render()
+            action = agent.get_action(state)
+
+            # Take action A, observe R, S'
+            state, reward, done, info = env.step(action)
 
 
 if __name__== "__main__":

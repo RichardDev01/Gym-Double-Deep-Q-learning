@@ -11,9 +11,13 @@ class EpsilonGreedyPolicy:
 
     def select_action(self, state: object, model: object, epsilon: float):
         """Selects the next action based on the state and policy"""
-        if np.random.rand(1)[0] < epsilon:
-            return torch.argmax(model(state))
+        # print(state)
+        if np.random.rand(1)[0] > epsilon:
+            # action = torch.argmax(model(torch.from_numpy(state))).item()
+            # print("Neural Network")
+            return torch.argmax(model(torch.from_numpy(state))).item()
         else:
+            # print("random")
             return self.env.action_space.sample()  # Chooses a random action from all possible actions
 
     def epsilon_decay(self):

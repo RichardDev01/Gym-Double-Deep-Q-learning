@@ -45,12 +45,12 @@ class Agent:
 
     def load_model(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
         self.approximator.load_network(primary_nn_name, target_nn_name)
-        self.primary_network = Approximator.q_network_1
-        self.target_network = Approximator.q_network_2
+        self.primary_network = self.approximator.q_network_1
+        self.target_network = self.approximator.q_network_2
 
     def get_action(self, state):
-        model = Approximator.load_network()
-        self.policy.select_action(state, model, self.epsilon)
+        # model = self.approximator.load_network()
+        return self.policy.select_action(state, self.primary_network, self.epsilon)
 
     def train(self):
         """Train a network with the Double Deep Q-Learning algorithm"""
