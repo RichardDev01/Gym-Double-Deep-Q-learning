@@ -1,11 +1,13 @@
 from Agent import Agent
 from Approximator import Approximator
 from EpsilonGreedyPolicy import EpsilonGreedyPolicy
+from Memory import Memory
+from Transition import Transition
 import gym
 
 
 def train(episodes: int):
-
+    memory = Memory(size=1000)
     env = gym.make("LunarLander-v2")
 
     policy = EpsilonGreedyPolicy(env)
@@ -20,8 +22,8 @@ def train(episodes: int):
 
     agent.load_model('default_primary_name', 'default_target_name')
 
-    action = agent.get_action(state)
-    print(action)
+    # action = agent.get_action(state)
+    # print(action)
     # episode = 0
     for i in range(episodes):
         # Initialize S
@@ -33,11 +35,16 @@ def train(episodes: int):
             action = agent.get_action(state)
 
             # Take action A, observe R, S'
-            state, reward, done, info = env.step(action)
+            next_state, reward, done, info = env.step(action)
 
+            # add sarsa to memory
+            memory.append_record(Transition(state, action, reward, done, next_state))
+
+            state = next_state
+        print(memory.sample())
 
 if __name__== "__main__":
-    train(episodes = 100)
+    train(episodes = 10)
     # env = gym.make('LunarLander-v2')
     #
     # state = env.reset()
