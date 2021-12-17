@@ -26,11 +26,13 @@ class Approximator:
         """Create class variables for double deep learning."""
         self.q_network_1 = None
         self.q_network_2 = None
+        self.model_path = Path(__file__) / '..' / 'models'
 
     def save_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
-        """Save the networks used for double q learning."""
+        """Save the networks used for double Q-learning."""
+
         # Models path
-        model_path = Path(__file__) / '..' / 'models'
+        model_path = self.model_path
 
         # Save primary network if available
         if self.q_network_1 is not None:
@@ -44,9 +46,26 @@ class Approximator:
             torch.save(self.q_network_2.state_dict(), PATH)
             print(f"Succesfully saved the target network as: {PATH}")
 
-    def load_network(self):
-        """Load network."""  # TODO
-        pass
+    def load_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
+        """Load networks used for double Q-learning."""  # TODO
+
+        # Models path
+        model_path = self.model_path
+
+        # Load primary network if none is present
+        if self.q_network_1 is not None:
+            PATH = model_path / (primary_nn_name + ".pth")
+            self.q_network_1.load_state_dict(torch.load(PATH))
+            self.q_network_1.eval()
+            print(f"Succesfully loaded the primary network from: {PATH}")
+
+        # Save target network is available
+        if self.q_network_2 is not None:
+            PATH = model_path / (target_nn_name + ".pth")
+            self.q_network_2.load_state_dict(torch.load(PATH))
+            self.q_network_2.eval()
+            print(f"Succesfully loaded the target network from: {PATH}")
+
 
     def train_network(self):
         """Train network."""  # TODO

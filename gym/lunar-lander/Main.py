@@ -12,4 +12,8 @@ approximator.create_network_q2()
 
 approximator.get_network_info()
 
-approximator.save_network()
+# approximator.save_network()
+
+approximator.load_network()
+
+approximator.get_network_info()
