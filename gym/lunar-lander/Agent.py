@@ -1,4 +1,7 @@
-"""Schrijf nu een functie die train heet.
+"""This files contain the agent class used for Double Deep Q-Learning.
+
+Schrijf nu een functie die train heet.
+
 Dit is een functie van de agent die het policy-network update adhv het Double Deep Q-Learning algoritme.
 Dit is een variatie op de Bellman Optimality Equation.
 Het idee is dat je hierin targets aanmaakt voor je netwerk (je labels) dit gaat in de volgende stappen:
@@ -17,18 +20,26 @@ verandert naar de target berekend in stap 4
 """
 from Approximator import *
 
+
 class Agent:
-    def __init__(self, policy:object,
+    """Agent class used for Double Deep Q-Learning."""
+
+    def __init__(self, policy: object,
                  alpha: float = 0.1,
-                 tau: float= 0.001,
+                 tau: float = 0.001,
                  epsilon: float = 0.1,
                  batchsize: int = 10,
                  learning_rate: float = 1,
                  model_input_size: int = 8,
                  model_output_size: int = 4,
                  model_middle_layer_size: int = 12):
-        """ Er zijn nog allerlei eigenschappen van de agent niet gespecificeerd. Onder andere Gamma/Alpha/Batchsize//epsilon etc.
-        Bedenk zelf waar die terecht moeten aan de hand van je theoretische begrip van het onderwerp."""
+        """
+        Initialize agent class.
+
+        Er zijn nog allerlei eigenschappen van de agent niet gespecificeerd. Onder andere Gamma/Alpha/Batchsize//epsilon etc.
+        Bedenk zelf waar die terecht moeten aan de hand van je theoretische begrip van het onderwerp.
+
+        """
         self.alpha = alpha
         self.tau = tau
         self.epsilon = epsilon
@@ -36,32 +47,62 @@ class Agent:
         self.learning_rate = learning_rate
         self.policy = policy
         self.approximator = Approximator()
-        self.primary_network = Approximator.create_network_q1(self.approximator,input_size=model_input_size,
+        self.primary_network = Approximator.create_network_q1(self.approximator, input_size=model_input_size,
                                                               output_size=model_output_size,
                                                               middle_layer_size=model_middle_layer_size)
-        self.target_network = Approximator.create_network_q2(self.approximator,input_size=model_input_size,
+        self.target_network = Approximator.create_network_q2(self.approximator, input_size=model_input_size,
                                                              output_size=model_output_size,
                                                              middle_layer_size=model_middle_layer_size)
 
     def load_model(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
+        """
+        Load pytorch model from models folder.
+
+        Args:
+            primary_nn_name:
+            target_nn_name:
+
+        Returns:
+        """
         self.approximator.load_network(primary_nn_name, target_nn_name)
         self.primary_network = self.approximator.q_network_1
         self.target_network = self.approximator.q_network_2
 
     def get_action(self, state):
+        """
+        Get action from policy.
+
+        Args:
+            state:
+
+        Returns:
+        """
         # model = self.approximator.load_network()
         return self.policy.select_action(state, self.primary_network, self.epsilon)
 
     def train(self):
-        """Train a network with the Double Deep Q-Learning algorithm"""
+        """Train a network with the Double Deep Q-Learning algorithm."""
         pass
 
     def copy_model(self):
-        """Schrijf een functie die copy_model heet, deze voegt de policy en het target-network samen.
+        """
+        Copy primary model weight to target model with tau value to update just a small bit.
+
+        Schrijf een functie die copy_model heet, deze voegt de policy en het target-network samen.
             Tau is hiervoor een input parameter die bepaalt hoeveel procent van het target-netwerk vervangen wordt door het policy netwerk.
             We doen dit minder vaak dan het trainen van het policy netwerk.
-            Maar dit gebeurt wel om de n stappen. N is een optimaliseerbare hyperparameter"""
-        pass
+            Maar dit gebeurt wel om de n stappen. N is een optimaliseerbare hyperparameter
+
+        Args:
+            primary_model:
+            target_model:
+            tau:
+
+        Returns:
+        """
+        for target, primary in zip(self.target_network.parameters(), self.primary_network.parameters()):
+            target.data.copy_(self.tau * primary.data + (1.0 - self.tau) * target.data)
 
     def replay_memory(self):
+        """Replay stuff."""
         pass
