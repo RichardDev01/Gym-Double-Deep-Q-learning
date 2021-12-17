@@ -71,9 +71,10 @@ class Approximator:
         """Train network."""  # TODO
         pass
 
-    def set_weights(self):
-        """Set weights."""  # TODO
-        pass
+    def set_weights(self, primary_model, target_model, tau):
+        """Set weights."""
+        for target, primary in zip(target_model.parameters(), primary_model.parameters()):
+            target.data.copy_(tau * primary.data + (1.0 - tau) * target.data)
 
     def load_weights(self):
         """Load weights."""  # TODO

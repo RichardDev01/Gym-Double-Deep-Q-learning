@@ -25,23 +25,27 @@ def train(episodes: int):
     # action = agent.get_action(state)
     # print(action)
     # episode = 0
-    for i in range(episodes):
-        # Initialize S
-        state = env.reset()
-        done = False
-        while not done:
-            # Choose A from S using policy derived from Q (e.g., ε-greedy)
-            env.render()
-            action = agent.get_action(state)
+    # for i in range(episodes):
+    #     # Initialize S
+    #     state = env.reset()
+    #     done = False
+    #     while not done:
+    #         # Choose A from S using policy derived from Q (e.g., ε-greedy)
+    #         env.render()
+    #         action = agent.get_action(state)
+    #
+    #         # Take action A, observe R, S'
+    #         next_state, reward, done, info = env.step(action)
+    #
+    #         # add sarsa to memory
+    #         memory.append_record(Transition(state, action, reward, done, next_state))
+    #
+    #         state = next_state
+    #     print(memory.sample())
 
-            # Take action A, observe R, S'
-            next_state, reward, done, info = env.step(action)
-
-            # add sarsa to memory
-            memory.append_record(Transition(state, action, reward, done, next_state))
-
-            state = next_state
-        print(memory.sample())
+    print(agent.primary_network.parameters())
+    for param in agent.primary_network.parameters():
+        print(param)
 
 if __name__== "__main__":
     train(episodes = 10)
