@@ -12,7 +12,7 @@ for i in range(100):
         randomAction = env.action_space.sample()
 
         observation, reward, done, info = env.step(randomAction)
-
+        print(len(observation))
         totalReward += reward
 
     print('Episode', i, ', Total reward:', totalReward)

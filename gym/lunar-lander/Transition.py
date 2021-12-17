@@ -8,5 +8,5 @@ class Transition:
     state: object
     action: object
     reward: int
-    next_state: object
     done: bool  # Dubbelop?
+    next_state: object
