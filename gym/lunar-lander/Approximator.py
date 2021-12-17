@@ -1,6 +1,9 @@
 """file containing the class for saving, loading, creating and training a Double Q Neural Network."""
 
+import torch
 from torch import nn
+
+from pathlib import Path
 
 """
 Schrijf een function approximator class. Dit is een neuraal netwerk.
@@ -24,9 +27,22 @@ class Approximator:
         self.q_network_1 = None
         self.q_network_2 = None
 
-    def save_network(self):
-        """Save network."""  # TODO
-        pass
+    def save_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
+        """Save the networks used for double q learning."""
+        # Models path
+        model_path = Path(__file__) / '..' / 'models'
+
+        # Save primary network if available
+        if self.q_network_1 is not None:
+            PATH = model_path / (primary_nn_name + ".pth")
+            torch.save(self.q_network_1.state_dict(), PATH)
+            print(f"Succesfully saved the primary network as: {PATH}")
+
+        # Save target network is available
+        if self.q_network_2 is not None:
+            PATH = model_path / (target_nn_name + ".pth")
+            torch.save(self.q_network_2.state_dict(), PATH)
+            print(f"Succesfully saved the target network as: {PATH}")
 
     def load_network(self):
         """Load network."""  # TODO
@@ -101,4 +117,5 @@ class Approximator:
         )
 
     def get_network_info(self):
+        """Print information about the networks used for double deep Q- Learning."""
         print(f"Primary network =\n{self.q_network_1}\nTarget network =\n{self.q_network_2}")
