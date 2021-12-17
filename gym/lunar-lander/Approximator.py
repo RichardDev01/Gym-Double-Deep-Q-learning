@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 from pathlib import Path
-
+import os
 """
 Schrijf een function approximator class. Dit is een neuraal netwerk.
 Gebruik hiervoor een library naar keuze. De agent heeft twee instanties van approximators,
@@ -25,7 +25,8 @@ class Approximator:
         """Create class variables for double deep learning."""
         self.q_network_1 = None
         self.q_network_2 = None
-        self.model_path = Path(__file__) / '..' / 'models'
+        self.model_path = os.path.dirname(os.getcwd()) + '/lunar-lander/models/'
+
 
     def save_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
         """Save the networks used for double Q-learning."""
@@ -45,7 +46,7 @@ class Approximator:
             torch.save(self.q_network_2.state_dict(), PATH)
             print(f"Succesfully saved the target network as: {PATH}")
 
-    def load_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
+    def load_network(self, primary_nn_name: str = 'default_primary_name.pth', target_nn_name: str = 'default_target_name'):
         """Load networks used for double Q-learning."""  # TODO
 
         # Models path
@@ -53,14 +54,14 @@ class Approximator:
 
         # Load primary network if none is present
         if self.q_network_1 is not None:
-            PATH = model_path / (primary_nn_name + ".pth")
+            PATH = model_path + (primary_nn_name + ".pth")
             self.q_network_1.load_state_dict(torch.load(PATH))
             self.q_network_1.eval()
             print(f"Succesfully loaded the primary network from: {PATH}")
 
         # Save target network is available
         if self.q_network_2 is not None:
-            PATH = model_path / (target_nn_name + ".pth")
+            PATH = model_path + (target_nn_name + ".pth")
             self.q_network_2.load_state_dict(torch.load(PATH))
             self.q_network_2.eval()
             print(f"Succesfully loaded the target network from: {PATH}")
