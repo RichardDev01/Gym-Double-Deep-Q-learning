@@ -2,7 +2,6 @@
 
 import torch
 from torch import nn
-from pathlib import Path
 import os
 """
 Schrijf een function approximator class. Dit is een neuraal netwerk.
@@ -27,28 +26,29 @@ class Approximator:
         self.q_network_2 = None
         self.model_path = os.path.dirname(os.getcwd()) + '/lunar-lander/models/'
 
-
-    def save_network(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
+    def save_network(self,
+                     primary_nn: object = None,
+                     target_nn: object = None,
+                     primary_nn_name: str = 'default_primary_name',
+                     target_nn_name: str = 'default_target_name'):
         """Save the networks used for double Q-learning."""
-
         # Models path
         model_path = self.model_path
 
         # Save primary network if available
-        if self.q_network_1 is not None:
-            PATH = model_path / (primary_nn_name + ".pth")
+        if primary_nn is not None:
+            PATH = model_path + primary_nn_name + ".pth"
             torch.save(self.q_network_1.state_dict(), PATH)
-            print(f"Succesfully saved the primary network as: {PATH}")
+            # print(f"Succesfully saved the primary network as: {PATH}")
 
         # Save target network is available
-        if self.q_network_2 is not None:
-            PATH = model_path / (target_nn_name + ".pth")
+        if target_nn is not None:
+            PATH = model_path + target_nn_name + ".pth"
             torch.save(self.q_network_2.state_dict(), PATH)
-            print(f"Succesfully saved the target network as: {PATH}")
+            # print(f"Succesfully saved the target network as: {PATH}")
 
     def load_network(self, primary_nn_name: str = 'default_primary_name.pth', target_nn_name: str = 'default_target_name'):
         """Load networks used for double Q-learning."""  # TODO
-
         # Models path
         model_path = self.model_path
 
@@ -66,15 +66,13 @@ class Approximator:
             self.q_network_2.eval()
             print(f"Succesfully loaded the target network from: {PATH}")
 
-
     def train_network(self):
         """Train network."""  # TODO
         pass
 
-    def set_weights(self, primary_model, target_model, tau):
+    def set_weights(self):
         """Set weights."""
-        for target, primary in zip(target_model.parameters(), primary_model.parameters()):
-            target.data.copy_(tau * primary.data + (1.0 - tau) * target.data)
+        pass
 
     def load_weights(self):
         """Load weights."""  # TODO
