@@ -92,12 +92,10 @@ class Approximator:
         """Train network."""  # TODO
         # Compute target Q value
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
-        # print(train_batch[0][0])
 
         state_batch = [x[0] for x in train_batch]
         action_batch = [x[1] for x in train_batch]
         reward_batch = [x[2] for x in train_batch]
-        done_batch = [x[3] for x in train_batch]
         next_obs_batch = [x[4] for x in train_batch]
 
         # print(f"{state_batch=}\n{action_batch=}\n{reward_batch=}\n{done_batch=}\n{next_obs_batch=}\n")
@@ -117,19 +115,14 @@ class Approximator:
 
         reward_batch_tensor = torch.stack(list(map(torch.tensor, reward_batch))).to(self.device)
 
-        input = state_batch
-        # print(input)
-        # (Q*(st,at) - Q0(st,at)
         output = torch.sub(q_star, reward_batch_tensor)
-        # print(output)
 
-        # print(current_q_values)
         current_q_values = primary_network(state_batch)
 
         chosen_q = torch.stack([x[y] for x, y in zip(current_q_values, action_batch)]).to(self.device)
 
         loss = self.loss_fn(output.float(), chosen_q.float())
-        # print(loss)
+
         self.optimizer.zero_grad()
 
         loss.backward()

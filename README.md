@@ -18,3 +18,9 @@ to run the script use the following command from root
 ```bash
 python gym/lunar-lander/lunar_start.py
 ```
+
+# Tensorboard
+To show the tensorboard
+```
+tensorboard --logdir runs
+```

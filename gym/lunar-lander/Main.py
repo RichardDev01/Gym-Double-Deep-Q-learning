@@ -5,6 +5,8 @@ from EpsilonGreedyPolicy import EpsilonGreedyPolicy
 from Memory import Memory
 from Transition import Transition
 import gym
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 
 
 def train(episodes: int, batch_size: int, update_network_N: int = 10):
@@ -28,7 +30,7 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0.1, batchsize=10, learning_rate=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=1, batchsize=10, learning_rate=1,
                   model_input_size=observation_length, model_output_size=total_actions)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
@@ -79,12 +81,12 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
                     # exit()
 
         # print(memory.sample())
-
+        writer.add_scalar('Total Reward', total_reward, episode)
         if episode % 10 == 0:
             print(f'Episode: {episode} - Total Reward: {total_reward} - Average Reward: {total_reward/iteration}')
             print("saving")
             agent.approximator.save_network(agent.primary_network, agent.target_network)
-
+    writer.close()
     # print(agent.primary_network.parameters())
     # for param in agent.primary_network.parameters():
     #     print(param)
@@ -109,7 +111,7 @@ def evaluate(episodes):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, learning_rate=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=1, batchsize=10, learning_rate=1,
                   model_input_size=observation_length, model_output_size=total_actions)
 
     agent.load_model('default_target_name')
@@ -128,6 +130,6 @@ def evaluate(episodes):
 
 
 if __name__ == "__main__":
-    # train(episodes=5000, batch_size=10, update_network_N=10)
+    train(episodes=500, batch_size=10, update_network_N=10)
 
     evaluate(episodes=100)
