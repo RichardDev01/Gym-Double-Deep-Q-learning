@@ -69,6 +69,16 @@ class Approximator:
     def train_network(self, train_batch: object, primary_network: object, target_network: object):
         """Train network."""  # TODO
         # Compute target Q value
+        # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
+        # print(train_batch[0][0])
+
+        state_batch = [x[0] for x in train_batch]
+        action_batch = [x[1] for x in train_batch]
+        reward_batch = [x[2] for x in train_batch]
+        done_batch = [x[3] for x in train_batch]
+        next_obs_batch = [x[4] for x in train_batch]
+
+        print(f"{state_batch=}\n{action_batch=}\n{reward_batch=}\n{done_batch=}\n{next_obs_batch=}\n")
 
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
 

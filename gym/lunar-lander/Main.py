@@ -73,6 +73,7 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
                     # Update target network parameters
                     # 0' ← t * 0 + (1 - t) * 0'
                     agent.train(batch)
+                    exit()
 
         # print(memory.sample())
 
