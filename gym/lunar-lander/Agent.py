@@ -53,6 +53,7 @@ class Agent:
         self.target_network = Approximator.create_network_q2(self.approximator, input_size=model_input_size,
                                                              output_size=model_output_size,
                                                              middle_layer_size=model_middle_layer_size)
+        self.approximator.set_optimizer(self.primary_network)
 
     def load_model(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
         """
@@ -85,7 +86,7 @@ class Agent:
         # Train primary network
         # Compute target Q value
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
-        self.approximator.train_network(train_batch, self.primary_network, self.target_network)
+        self.approximator.train_network(train_batch, self.primary_network, self.target_network, self.learning_rate)
 
         # Update target network
         # 0' ← t * 0 + (1 - t) * 0'

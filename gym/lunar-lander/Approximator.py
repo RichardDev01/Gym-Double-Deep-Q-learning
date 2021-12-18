@@ -1,8 +1,9 @@
 """file containing the class for saving, loading, creating and training a Double Q Neural Network."""
 
 import torch
-from torch import nn
+from torch import nn, optim
 import os
+
 """
 Schrijf een function approximator class. Dit is een neuraal netwerk.
 Gebruik hiervoor een library naar keuze. De agent heeft twee instanties van approximators,
@@ -26,6 +27,23 @@ class Approximator:
         self.q_network_2 = None
         self.model_path = os.path.dirname(os.getcwd()) + '/lunar-lander/models/'
 
+        # setting device on GPU if available, else CPU
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print('Using device:', self.device)
+        self.optimizer = None
+
+    def set_optimizer(self, model):
+        """
+        Set the optimizer for the model.
+
+        Args:
+            model:
+
+        Returns:
+
+        """
+        self.optimizer = optim.Adam(model.parameters(), lr=0.0001)
+
     def save_network(self,
                      primary_nn: object = None,
                      target_nn: object = None,
@@ -47,7 +65,8 @@ class Approximator:
             torch.save(self.q_network_2.state_dict(), PATH)
             # print(f"Succesfully saved the target network as: {PATH}")
 
-    def load_network(self, primary_nn_name: str = 'default_primary_name.pth', target_nn_name: str = 'default_target_name'):
+    def load_network(self, primary_nn_name: str = 'default_primary_name.pth',
+                     target_nn_name: str = 'default_target_name'):
         """Load networks used for double Q-learning."""  # TODO
         # Models path
         model_path = self.model_path
@@ -57,6 +76,7 @@ class Approximator:
             PATH = model_path + (primary_nn_name + ".pth")
             self.q_network_1.load_state_dict(torch.load(PATH))
             self.q_network_1.eval()
+            self.q_network_1.to(self.device)
             print(f"Succesfully loaded the primary network from: {PATH}")
 
         # Save target network is available
@@ -64,9 +84,10 @@ class Approximator:
             PATH = model_path + (target_nn_name + ".pth")
             self.q_network_2.load_state_dict(torch.load(PATH))
             self.q_network_2.eval()
+            self.q_network_2.to(self.device)
             print(f"Succesfully loaded the target network from: {PATH}")
 
-    def train_network(self, train_batch: object, primary_network: object, target_network: object):
+    def train_network(self, train_batch: object, primary_network: object, target_network: object, learning_rate: float):
         """Train network."""  # TODO
         # Compute target Q value
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
@@ -78,11 +99,30 @@ class Approximator:
         done_batch = [x[3] for x in train_batch]
         next_obs_batch = [x[4] for x in train_batch]
 
-        print(f"{state_batch=}\n{action_batch=}\n{reward_batch=}\n{done_batch=}\n{next_obs_batch=}\n")
+        # print(f"{state_batch=}\n{action_batch=}\n{reward_batch=}\n{done_batch=}\n{next_obs_batch=}\n")
+
+        state_batch = torch.stack(list(map(torch.tensor, state_batch))).to(self.device)
+        next_obs_batch = torch.stack(list(map(torch.tensor, next_obs_batch))).to(self.device)
+
+        with torch.no_grad():
+            current_q_values = primary_network(state_batch)
+            next_q_values = primary_network(next_obs_batch)
+
+        # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
+        q_star = torch.tensor([reward + learning_rate * torch.max(next_q_pred).item()
+                               for reward, next_q_pred in zip(reward_batch, next_q_values)
+                               ])  # TODO, this is q-learning i think
 
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
 
-        pass
+        """
+        for input, target in dataset:
+            optimizer.zero_grad()
+            output = model(input)
+            loss = loss_fn(output, target)
+            loss.backward()
+            optimizer.step()
+        """
 
     def set_weights(self):
         """Set weights."""

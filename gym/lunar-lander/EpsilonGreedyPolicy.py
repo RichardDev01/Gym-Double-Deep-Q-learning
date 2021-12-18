@@ -15,6 +15,7 @@ class EpsilonGreedyPolicy:
     def __init__(self, env):
         """Initialize epsilon greedy policy."""
         self.env = env
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     def select_action(self, state: object, model: object, epsilon: float):
         """Select the next action based on the state and policy."""
@@ -22,7 +23,9 @@ class EpsilonGreedyPolicy:
         if np.random.rand(1)[0] > epsilon:
             # action = torch.argmax(model(torch.from_numpy(state))).item()
             # print("Neural Network")
-            return torch.argmax(model(torch.from_numpy(state))).item()
+            with torch.no_grad():
+                action = torch.argmax(model(torch.from_numpy(state).to(self.device))).item()
+            return action
         else:
             # print("random")
             return self.env.action_space.sample()  # Chooses a random action from all possible actions
