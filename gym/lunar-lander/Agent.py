@@ -80,9 +80,16 @@ class Agent:
         # model = self.approximator.load_network()
         return self.policy.select_action(state, self.primary_network, self.epsilon)
 
-    def train(self):
+    def train(self, train_batch: object):
         """Train a network with the Double Deep Q-Learning algorithm."""
-        pass
+        # Train primary network
+        # Compute target Q value
+        # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
+        self.approximator.train_network(train_batch, self.primary_network, self.target_network)
+
+        # Update target network
+        # 0' ← t * 0 + (1 - t) * 0'
+        self.copy_model()
 
     def copy_model(self):
         """
@@ -93,13 +100,9 @@ class Agent:
             We doen dit minder vaak dan het trainen van het policy netwerk.
             Maar dit gebeurt wel om de n stappen. N is een optimaliseerbare hyperparameter
 
-        Args:
-            primary_model:
-            target_model:
-            tau:
-
         Returns:
         """
+        # 0' ← t * 0 + (1 - t) * 0'
         for target, primary in zip(self.target_network.parameters(), self.primary_network.parameters()):
             target.data.copy_(self.tau * primary.data + (1.0 - self.tau) * target.data)
 

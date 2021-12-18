@@ -66,8 +66,12 @@ class Approximator:
             self.q_network_2.eval()
             print(f"Succesfully loaded the target network from: {PATH}")
 
-    def train_network(self):
+    def train_network(self, train_batch: object, primary_network: object, target_network: object):
         """Train network."""  # TODO
+        # Compute target Q value
+
+        # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
+
         pass
 
     def set_weights(self):
