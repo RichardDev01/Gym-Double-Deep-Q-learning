@@ -31,6 +31,7 @@ class Approximator:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print('Using device:', self.device)
         self.optimizer = None
+        self.loss_fn = nn.MSELoss()
 
     def set_optimizer(self, model):
         """
@@ -105,15 +106,35 @@ class Approximator:
         next_obs_batch = torch.stack(list(map(torch.tensor, next_obs_batch))).to(self.device)
 
         with torch.no_grad():
-            current_q_values = primary_network(state_batch)
             next_q_values = primary_network(next_obs_batch)
 
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
         q_star = torch.tensor([reward + learning_rate * torch.max(next_q_pred).item()
                                for reward, next_q_pred in zip(reward_batch, next_q_values)
-                               ])  # TODO, this is q-learning i think
+                               ]).to(self.device)  # TODO, this is q-learning i think
 
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
+
+        reward_batch_tensor = torch.stack(list(map(torch.tensor, reward_batch))).to(self.device)
+
+        input = state_batch
+        # print(input)
+        # (Q*(st,at) - Q0(st,at)
+        output = torch.sub(q_star, reward_batch_tensor)
+        # print(output)
+
+        # print(current_q_values)
+        current_q_values = primary_network(state_batch)
+
+        chosen_q = torch.stack([x[y] for x, y in zip(current_q_values, action_batch)]).to(self.device)
+
+        loss = self.loss_fn(output.float(), chosen_q.float())
+        # print(loss)
+        self.optimizer.zero_grad()
+
+        loss.backward()
+
+        self.optimizer.step()
 
         """
         for input, target in dataset:

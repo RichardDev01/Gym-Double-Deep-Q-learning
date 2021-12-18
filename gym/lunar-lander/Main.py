@@ -44,10 +44,13 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
 
         # for each environment step do
         # Initialize S, observe first state
+        iteration = 0
+        total_reward = 0
         state = env.reset()
         while not done:
             # Counter for checking if we update the networks
             update_network_counter += 1
+            iteration += 1
 
             # env.render()
 
@@ -56,7 +59,7 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
 
             # Execute at and observe next state st+1 and reward rt = R(st,at)
             next_state, reward, done, info = env.step(action)
-
+            total_reward += reward
             # Store (st,at,rt,st+1) ~ D
             memory.append_record(Transition(state, action, reward, done, next_state))
 
@@ -73,11 +76,12 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
                     # Update target network parameters
                     # 0' ← t * 0 + (1 - t) * 0'
                     agent.train(batch)
-                    exit()
+                    # exit()
 
         # print(memory.sample())
 
         if episode % 10 == 0:
+            print(f'Episode: {episode} - Total Reward: {total_reward} - Average Reward: {total_reward/iteration}')
             print("saving")
             agent.approximator.save_network(agent.primary_network, agent.target_network)
 
@@ -124,6 +128,6 @@ def evaluate(episodes):
 
 
 if __name__ == "__main__":
-    train(episodes=500, batch_size=10, update_network_N=10)
+    # train(episodes=5000, batch_size=10, update_network_N=10)
 
-    evaluate(episodes=10)
+    evaluate(episodes=100)
