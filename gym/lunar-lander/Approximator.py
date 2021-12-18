@@ -172,7 +172,7 @@ class Approximator:
             nn.Linear(middle_layer_size, middle_layer_output),
             nn.ReLU(),
             nn.Linear(middle_layer_output, output_size),
-        )
+        ).to(self.device)
         return self.q_network_1
 
     def create_network_q2(self, input_size: int = 8, output_size: int = 4, middle_layer_size: int = 12):
@@ -201,7 +201,7 @@ class Approximator:
             nn.Linear(middle_layer_size, middle_layer_output),
             nn.ReLU(),
             nn.Linear(middle_layer_output, output_size),
-        )
+        ).to(self.device)
         return self.q_network_2
 
     def get_network_info(self):

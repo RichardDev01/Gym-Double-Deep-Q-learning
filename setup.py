@@ -6,6 +6,7 @@ install_requires = [
     'pyglet',
     'box2d',
     'torch',
+    'tensorboard',
 ]
 
 extras = {

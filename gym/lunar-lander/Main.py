@@ -9,11 +9,12 @@ from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 
 
-def train(episodes: int, batch_size: int, update_network_N: int = 10):
+def train(episodes: int, batch_size: int, update_network_N: int = 10, new_network: bool = False):
     """
     Train pytorch model using deep double Q-learning.
 
     Args:
+        new_network:
         episodes:
         batch_size:
         update_network_N:
@@ -30,12 +31,14 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=1, batchsize=10, learning_rate=1,
-                  model_input_size=observation_length, model_output_size=total_actions)
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0.6, batchsize=batch_size, learning_rate=0.002,
+                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
-    agent.load_model('default_primary_name', 'default_target_name')
-    memory = Memory(size=1000)
+    if not new_network:
+        agent.load_model('default_primary_name', 'default_target_name')
+
+    memory = Memory(size=10000)
 
     episode = 0
     update_network_counter = 1
@@ -112,8 +115,9 @@ def evaluate(episodes):
     observation_length = len(state)
 
     agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=1, batchsize=10, learning_rate=1,
-                  model_input_size=observation_length, model_output_size=total_actions)
+                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
 
+    # agent.load_model('default_primary_name')
     agent.load_model('default_target_name')
 
     for i in range(episodes):
@@ -130,6 +134,6 @@ def evaluate(episodes):
 
 
 if __name__ == "__main__":
-    train(episodes=500, batch_size=10, update_network_N=10)
+    train(episodes=15000, batch_size=64, update_network_N=4, new_network=True)
 
-    evaluate(episodes=100)
+    # evaluate(episodes=100)
