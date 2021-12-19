@@ -96,6 +96,7 @@ class Approximator:
         state_batch = [x[0] for x in train_batch]
         action_batch = [x[1] for x in train_batch]
         reward_batch = [x[2] for x in train_batch]
+        done_batch = [x[3] for x in train_batch]
         next_obs_batch = [x[4] for x in train_batch]
 
         # print(f"{state_batch=}\n{action_batch=}\n{reward_batch=}\n{done_batch=}\n{next_obs_batch=}\n")
@@ -105,11 +106,14 @@ class Approximator:
 
         with torch.no_grad():
             next_q_values = primary_network(next_obs_batch)
+            next_q_values_target = target_network(next_obs_batch)
 
+        #                       target network(next_state)[index from max q0]
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
-        q_star = torch.tensor([reward + learning_rate * torch.max(next_q_pred).item()
-                               for reward, next_q_pred in zip(reward_batch, next_q_values)
-                               ]).to(self.device)  # TODO, this is q-learning i think
+        q_star = torch.tensor([reward if done else
+                               reward + learning_rate * q_target[torch.argmax(next_q_pred).item()]
+                               for reward, next_q_pred, done, q_target in zip(reward_batch, next_q_values, done_batch, next_q_values_target)
+                               ]).to(self.device)
 
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
 

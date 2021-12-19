@@ -22,5 +22,6 @@ python gym/lunar-lander/lunar_start.py
 # Tensorboard
 To show the tensorboard
 ```
-tensorboard --logdir runs
+tensorboard --logdir gym/lunar-lander/runs
+
 ```
