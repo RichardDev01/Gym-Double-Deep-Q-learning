@@ -27,7 +27,7 @@ def evaluate():
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
 
     # agent.load_model('default_primary_name')
-    agent.load_model('default_target_name')
+    agent.load_model('default_target_name', 'default_target_name')
 
     while True:
         # Initialize S

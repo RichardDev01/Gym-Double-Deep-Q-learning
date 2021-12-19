@@ -117,15 +117,16 @@ class Approximator:
 
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
 
-        reward_batch_tensor = torch.stack(list(map(torch.tensor, reward_batch))).to(self.device)
+        # reward_batch_tensor = torch.stack(list(map(torch.tensor, reward_batch))).to(self.device)
 
-        output = torch.sub(q_star, reward_batch_tensor)
+        # output = torch.pow(torch.sub(q_star, reward_batch_tensor),2)
 
         current_q_values = primary_network(state_batch)
 
         chosen_q = torch.stack([x[y] for x, y in zip(current_q_values, action_batch)]).to(self.device)
 
-        loss = self.loss_fn(output.float(), chosen_q.float())
+        # loss = self.loss_fn(output.float(), chosen_q.float())
+        loss = self.loss_fn(chosen_q.float(), q_star.float())
 
         self.optimizer.zero_grad()
 

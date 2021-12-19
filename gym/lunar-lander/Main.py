@@ -9,11 +9,21 @@ from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 
 
-def train(episodes: int, batch_size: int, update_network_N: int = 10, new_network: bool = False):
+def train(episodes: int,
+          batch_size: int,
+          update_network_N: int = 10,
+          tau: float = 0.01,
+          epsilon: float = 0.6,
+          learning_rate: float=0.0001,
+          model_middle_layer_size:int = 32,
+          memory_size: int = 10000,
+          new_network: bool = False):
     """
     Train pytorch model using deep double Q-learning.
 
     Args:
+        epsilon:
+        tau:
         new_network:
         episodes:
         batch_size:
@@ -31,14 +41,14 @@ def train(episodes: int, batch_size: int, update_network_N: int = 10, new_networ
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.01, epsilon=0.6, batchsize=batch_size, learning_rate=0.0001,
-                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
+    agent = Agent(policy, alpha=0.1, tau=tau, epsilon=epsilon, batchsize=batch_size, learning_rate=learning_rate,
+                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=model_middle_layer_size)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
     if not new_network:
         agent.load_model('default_primary_name', 'default_target_name')
 
-    memory = Memory(size=10000)
+    memory = Memory(size=memory_size)
 
     episode = 0
     update_network_counter = 1
@@ -134,6 +144,14 @@ def evaluate(episodes):
 
 
 if __name__ == "__main__":
-    train(episodes=10000, batch_size=64, update_network_N=4, new_network=True)
+    train(episodes=1000,
+          batch_size=64,
+          update_network_N=1,
+          tau=0.001,
+          epsilon=0.4,
+          learning_rate=0.001,
+          model_middle_layer_size=16,
+          memory_size=100000,
+          new_network=True)
 
     # evaluate(episodes=1000)
