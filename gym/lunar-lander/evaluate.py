@@ -1,3 +1,5 @@
+"""Run the simulation with policy and model."""
+
 from Agent import Agent
 from EpsilonGreedyPolicy import EpsilonGreedyPolicy
 
@@ -23,10 +25,10 @@ def evaluate():
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, learning_rate=1,
-                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, gamma=1,
+                  model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=256)
 
-    # agent.load_model('default_primary_name')
+    # agent.load_model('default_primary_name','default_primary_name')
     agent.load_model('default_target_name', 'default_target_name')
 
     while True:

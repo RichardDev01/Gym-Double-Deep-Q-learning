@@ -88,7 +88,7 @@ class Approximator:
             self.q_network_2.to(self.device)
             print(f"Succesfully loaded the target network from: {PATH}")
 
-    def train_network(self, train_batch: object, primary_network: object, target_network: object, learning_rate: float):
+    def train_network(self, train_batch: object, primary_network: object, target_network: object, gamma: float):
         """Train network."""  # TODO
         # Compute target Q value
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
@@ -111,7 +111,7 @@ class Approximator:
         #                       target network(next_state)[index from max q0]
         # Q*(st,at) = rt +y * Q0'(st+1, argmax a' q0(st+1,a')
         q_star = torch.tensor([reward if done else
-                               reward + learning_rate * q_target[torch.argmax(next_q_pred).item()]
+                               reward + gamma * q_target[torch.argmax(next_q_pred).item()]
                                for reward, next_q_pred, done, q_target in zip(reward_batch, next_q_values, done_batch, next_q_values_target)
                                ]).to(self.device)
 
@@ -126,7 +126,8 @@ class Approximator:
         chosen_q = torch.stack([x[y] for x, y in zip(current_q_values, action_batch)]).to(self.device)
 
         # loss = self.loss_fn(output.float(), chosen_q.float())
-        loss = self.loss_fn(chosen_q.float(), q_star.float())
+        # loss = self.loss_fn(chosen_q.float(), q_star.float())
+        loss = self.loss_fn(q_star.float(), chosen_q.float())
 
         self.optimizer.zero_grad()
 

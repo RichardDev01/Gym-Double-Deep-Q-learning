@@ -29,7 +29,7 @@ class Agent:
                  tau: float = 0.001,
                  epsilon: float = 0.1,
                  batchsize: int = 10,
-                 learning_rate: float = 1,
+                 gamma: float = 1,
                  model_input_size: int = 8,
                  model_output_size: int = 4,
                  model_middle_layer_size: int = 12):
@@ -44,7 +44,7 @@ class Agent:
         self.tau = tau
         self.epsilon = epsilon
         self.batchsize = batchsize
-        self.learning_rate = learning_rate
+        self.gamma = gamma
         self.policy = policy
         self.approximator = Approximator()
         self.primary_network = Approximator.create_network_q1(self.approximator, input_size=model_input_size,
@@ -86,7 +86,7 @@ class Agent:
         # Train primary network
         # Compute target Q value
         # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
-        self.approximator.train_network(train_batch, self.primary_network, self.target_network, self.learning_rate)
+        self.approximator.train_network(train_batch, self.primary_network, self.target_network, self.gamma)
 
         # Update target network
         # 0' ← t * 0 + (1 - t) * 0'

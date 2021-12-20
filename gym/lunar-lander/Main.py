@@ -14,8 +14,8 @@ def train(episodes: int,
           update_network_N: int = 10,
           tau: float = 0.01,
           epsilon: float = 0.6,
-          learning_rate: float=0.0001,
-          model_middle_layer_size:int = 32,
+          gamma: float = 0.99,
+          model_middle_layer_size: int = 32,
           memory_size: int = 10000,
           new_network: bool = False):
     """
@@ -41,7 +41,7 @@ def train(episodes: int,
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=tau, epsilon=epsilon, batchsize=batch_size, learning_rate=learning_rate,
+    agent = Agent(policy, alpha=0.1, tau=tau, epsilon=epsilon, batchsize=batch_size, gamma=gamma,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=model_middle_layer_size)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
@@ -124,7 +124,7 @@ def evaluate(episodes):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, learning_rate=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, gamma=1,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
 
     # agent.load_model('default_primary_name')
@@ -144,14 +144,14 @@ def evaluate(episodes):
 
 
 if __name__ == "__main__":
-    train(episodes=1000,
+    train(episodes=5000,
           batch_size=64,
-          update_network_N=1,
+          update_network_N=4,
           tau=0.001,
-          epsilon=0.4,
-          learning_rate=0.001,
-          model_middle_layer_size=16,
-          memory_size=100000,
-          new_network=True)
+          epsilon=0.1,
+          gamma=0.99,
+          model_middle_layer_size=256,
+          memory_size=50000,
+          new_network=False)
 
     # evaluate(episodes=1000)
