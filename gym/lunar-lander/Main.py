@@ -13,11 +13,14 @@ def train(episodes: int,
           batch_size: int,
           update_network_N: int = 10,
           tau: float = 0.01,
-          epsilon: float = 0.6,
           gamma: float = 0.99,
           model_middle_layer_size: int = 32,
           memory_size: int = 10000,
-          new_network: bool = False):
+          new_network: bool = False,
+          base_epsilon: float = 0.9,
+          decay_factor: float = 0.999,
+          minimal_epsilon: float = 0.001
+          ):
     """
     Train pytorch model using deep double Q-learning.
 
@@ -34,14 +37,14 @@ def train(episodes: int,
     """
     env = gym.make("LunarLander-v2")
 
-    policy = EpsilonGreedyPolicy(env)
+    policy = EpsilonGreedyPolicy(env, base_epsilon, decay_factor, minimal_epsilon)
 
     state = env.reset()
 
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=tau, epsilon=epsilon, batchsize=batch_size, gamma=gamma,
+    agent = Agent(policy, alpha=0.1, tau=tau, batchsize=batch_size, gamma=gamma,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=model_middle_layer_size)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
@@ -92,11 +95,12 @@ def train(episodes: int,
                     # 0' ← t * 0 + (1 - t) * 0'
                     agent.train(batch)
                     # exit()
+        policy.epsilon_decay()
 
         # print(memory.sample())
         writer.add_scalar('Total Reward', total_reward, episode)
         if episode % 10 == 0:
-            print(f'Episode: {episode} - Total Reward: {total_reward} - Average Reward: {total_reward/iteration}')
+            print(f'Episode: {episode} - Total Reward: {total_reward} - Average Reward: {total_reward/iteration} - Epsilon: {policy.epsilon}')
             print("saving")
             agent.approximator.save_network(agent.primary_network, agent.target_network)
     writer.close()
@@ -124,7 +128,7 @@ def evaluate(episodes):
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, gamma=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, batchsize=10, gamma=1,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=32)
 
     # agent.load_model('default_primary_name')
@@ -148,10 +152,14 @@ if __name__ == "__main__":
           batch_size=64,
           update_network_N=4,
           tau=0.001,
-          epsilon=0.1,
           gamma=0.99,
           model_middle_layer_size=256,
           memory_size=50000,
-          new_network=False)
+          new_network=False,
+          base_epsilon=0.9,
+          decay_factor=0.999,
+          minimal_epsilon = 0.001
+
+        )
 
     # evaluate(episodes=1000)
