@@ -43,6 +43,8 @@ def evaluate():
             # Take action A, observe R, S'
             next_state, reward, done, info = env.step(action)
 
+            state = next_state
+
 
 if __name__ == "__main__":
 

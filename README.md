@@ -13,11 +13,13 @@ pip install .[dev]
 
 # Lunar Lander
 
-to run the script use the following command from root
+to run the script run the following file
 
 ```bash
-python gym/lunar-lander/lunar_start.py
+gym/lunar-lander/main.py
 ```
+![Alt Text](https://github.com/RichardDev01/Gym-Double-Deep-Q-learning/blob/main/gym/lunar-lander/worked_out_model_ll_dqn.gif?raw=true)
+
 
 # Tensorboard
 To show the tensorboard
