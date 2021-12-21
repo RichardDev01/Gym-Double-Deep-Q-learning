@@ -121,7 +121,7 @@ def evaluate(episodes):
     """
     env = gym.make("LunarLander-v2")
 
-    policy = EpsilonGreedyPolicy(env)
+    policy = EpsilonGreedyPolicy(env, epsilon=1.0, decay_factor=0.995, minimal_epsilon=0.1)
 
     state = env.reset()
 
