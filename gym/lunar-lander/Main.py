@@ -14,6 +14,7 @@ def train(episodes: int,
           update_network_N: int = 10,
           tau: float = 0.01,
           gamma: float = 0.99,
+          learning_rate: float = 0.0001,
           model_middle_layer_size: int = 32,
           memory_size: int = 10000,
           new_network: bool = False,
@@ -44,7 +45,7 @@ def train(episodes: int,
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=tau, batchsize=batch_size, gamma=gamma,
+    agent = Agent(policy, tau=tau, batchsize=batch_size, gamma=gamma, learning_rate=learning_rate,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=model_middle_layer_size)
 
     # Initialize primary network Q0, target network Q0', replay buffer D,t << 1
@@ -153,6 +154,7 @@ if __name__ == "__main__":
           update_network_N=4,
           tau=0.001,
           gamma=0.99,
+          learning_rate=0.1,
           model_middle_layer_size=256,
           memory_size=50000,
           new_network=False,

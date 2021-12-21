@@ -28,6 +28,7 @@ class Agent:
                  tau: float = 0.001,
                  batchsize: int = 64,
                  gamma: float = 0.99,
+                 learning_rate: float = 0.0001,
                  model_input_size: int = 8,
                  model_output_size: int = 4,
                  model_middle_layer_size: int = 256):
@@ -37,6 +38,7 @@ class Agent:
         :param tau: Variable for algorithm
         :param batchsize: Batchsize for algorithm
         :param gamma: Discount value for algorithm
+        :param learning_rate: learning rate factor for optimizer
         :param model_input_size: Number of input nodes
         :param model_output_size: Number of output nodes
         :param model_middle_layer_size: Number of hidden layer nodes
@@ -45,6 +47,7 @@ class Agent:
         self.tau = tau
         self.batchsize = batchsize
         self.gamma = gamma
+        self.learning_rate = learning_rate
         self.policy = policy
         self.approximator = Approximator()
         self.primary_network = Approximator.create_network_q1(self.approximator, input_size=model_input_size,
@@ -53,7 +56,7 @@ class Agent:
         self.target_network = Approximator.create_network_q2(self.approximator, input_size=model_input_size,
                                                              output_size=model_output_size,
                                                              middle_layer_size=model_middle_layer_size)
-        self.approximator.set_optimizer(self.primary_network)
+        self.approximator.set_optimizer(self.primary_network, self.learning_rate)
 
     def load_model(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
         """Load pytorch model from models folder.
@@ -92,4 +95,3 @@ class Agent:
         # 0' ← t * 0 + (1 - t) * 0'
         for target, primary in zip(self.target_network.parameters(), self.primary_network.parameters()):
             target.data.copy_(self.tau * primary.data + (1.0 - self.tau) * target.data)
-
