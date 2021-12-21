@@ -18,14 +18,14 @@ def evaluate():
     """
     env = gym.make("LunarLander-v2")
 
-    policy = EpsilonGreedyPolicy(env)
+    policy = EpsilonGreedyPolicy(env, epsilon=1.0, decay_factor=0.995, minimal_epsilon=0.1)
 
     state = env.reset()
 
     total_actions = env.action_space.n
     observation_length = len(state)
 
-    agent = Agent(policy, alpha=0.1, tau=0.1, epsilon=0, batchsize=10, gamma=1,
+    agent = Agent(policy, alpha=0.1, tau=0.1, batchsize=10, gamma=1,
                   model_input_size=observation_length, model_output_size=total_actions, model_middle_layer_size=256)
 
     # agent.load_model('default_primary_name','default_primary_name')

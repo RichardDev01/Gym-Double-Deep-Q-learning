@@ -27,7 +27,6 @@ class Agent:
     def __init__(self, policy: object,
                  alpha: float = 0.1,
                  tau: float = 0.001,
-                 epsilon: float = 0.1,
                  batchsize: int = 10,
                  gamma: float = 1,
                  model_input_size: int = 8,
@@ -42,7 +41,6 @@ class Agent:
         """
         self.alpha = alpha
         self.tau = tau
-        self.epsilon = epsilon
         self.batchsize = batchsize
         self.gamma = gamma
         self.policy = policy
@@ -79,7 +77,7 @@ class Agent:
         Returns:
         """
         # model = self.approximator.load_network()
-        return self.policy.select_action(state, self.primary_network, self.epsilon)
+        return self.policy.select_action(state, self.primary_network)
 
     def train(self, train_batch: object):
         """Train a network with the Double Deep Q-Learning algorithm."""

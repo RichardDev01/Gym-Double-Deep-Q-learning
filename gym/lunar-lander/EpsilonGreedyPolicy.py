@@ -12,15 +12,18 @@ import torch
 class EpsilonGreedyPolicy:
     """Epsilon greedy policy class."""
 
-    def __init__(self, env):
+    def __init__(self, env: object, epsilon: float, decay_factor: float, minimal_epsilon: float):
         """Initialize epsilon greedy policy."""
         self.env = env
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.epsilon = epsilon
+        self.decay_factor = decay_factor
+        self.minimal_epsilon = minimal_epsilon
 
-    def select_action(self, state: object, model: object, epsilon: float):
+    def select_action(self, state: object, model: object):
         """Select the next action based on the state and policy."""
         # print(state)
-        if np.random.rand(1)[0] > epsilon:
+        if np.random.rand(1)[0] > self.epsilon:
             # action = torch.argmax(model(torch.from_numpy(state))).item()
             # print("Neural Network")
             with torch.no_grad():
@@ -32,4 +35,5 @@ class EpsilonGreedyPolicy:
 
     def epsilon_decay(self):
         """Add decay to epsilon overtime function optional."""
-        pass
+        if self.epsilon > self.minimal_epsilon:
+            self.epsilon = self.epsilon * self.decay_factor
