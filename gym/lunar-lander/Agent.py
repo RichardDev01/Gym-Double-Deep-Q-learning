@@ -26,7 +26,7 @@ class Agent:
 
     def __init__(self, policy: object,
                  tau: float = 0.001,
-                 batchsize: int = 64,
+                 batch_size: int = 64,
                  gamma: float = 0.99,
                  learning_rate: float = 0.0001,
                  model_input_size: int = 8,
@@ -36,7 +36,7 @@ class Agent:
 
         :param policy: The agent's policy
         :param tau: Variable for algorithm
-        :param batchsize: Batchsize for algorithm
+        :param batch_size: Memory batch size for algorithm
         :param gamma: Discount value for algorithm
         :param learning_rate: learning rate factor for optimizer
         :param model_input_size: Number of input nodes
@@ -45,7 +45,7 @@ class Agent:
         """
 
         self.tau = tau
-        self.batchsize = batchsize
+        self.batch_size = batch_size
         self.gamma = gamma
         self.learning_rate = learning_rate
         self.policy = policy
