@@ -158,8 +158,6 @@ if __name__ == "__main__":
           new_network=False,
           base_epsilon=0.9,
           decay_factor=0.999,
-          minimal_epsilon = 0.001
-
-        )
+          minimal_epsilon=0.001)
 
     # evaluate(episodes=1000)

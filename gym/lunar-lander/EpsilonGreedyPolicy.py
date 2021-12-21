@@ -36,4 +36,4 @@ class EpsilonGreedyPolicy:
     def epsilon_decay(self):
         """Add decay to epsilon overtime function optional."""
         if self.epsilon > self.minimal_epsilon:
-            self.epsilon = self.epsilon*self.decay_factor
+            self.epsilon = self.epsilon * self.decay_factor
