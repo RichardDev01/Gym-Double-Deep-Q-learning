@@ -25,21 +25,23 @@ class Agent:
     """Agent class used for Double Deep Q-Learning."""
 
     def __init__(self, policy: object,
-                 alpha: float = 0.1,
                  tau: float = 0.001,
-                 batchsize: int = 10,
-                 gamma: float = 1,
+                 batchsize: int = 64,
+                 gamma: float = 0.99,
                  model_input_size: int = 8,
                  model_output_size: int = 4,
-                 model_middle_layer_size: int = 12):
-        """
-        Initialize agent class.
+                 model_middle_layer_size: int = 256):
+        """Initializes the agent class
 
-        Er zijn nog allerlei eigenschappen van de agent niet gespecificeerd. Onder andere Gamma/Alpha/Batchsize//epsilon etc.
-        Bedenk zelf waar die terecht moeten aan de hand van je theoretische begrip van het onderwerp.
-
+        :param policy: The agent's policy
+        :param tau: Variable for algorithm
+        :param batchsize: Batchsize for algorithm
+        :param gamma: Discount value for algorithm
+        :param model_input_size: Number of input nodes
+        :param model_output_size: Number of output nodes
+        :param model_middle_layer_size: Number of hidden layer nodes
         """
-        self.alpha = alpha
+
         self.tau = tau
         self.batchsize = batchsize
         self.gamma = gamma
@@ -54,57 +56,40 @@ class Agent:
         self.approximator.set_optimizer(self.primary_network)
 
     def load_model(self, primary_nn_name: str = 'default_primary_name', target_nn_name: str = 'default_target_name'):
-        """
-        Load pytorch model from models folder.
+        """Load pytorch model from models folder.
 
-        Args:
-            primary_nn_name:
-            target_nn_name:
-
-        Returns:
+        :param primary_nn_name: Primary network file name
+        :param target_nn_name: Target network file name
         """
         self.approximator.load_network(primary_nn_name, target_nn_name)
         self.primary_network = self.approximator.q_network_1
         self.target_network = self.approximator.q_network_2
 
-    def get_action(self, state):
-        """
-        Get action from policy.
+    def get_action(self, state: object):
+        """Get action from policy.
 
-        Args:
-            state:
-
-        Returns:
+        :param state: Environment state
+        :return: Chosen action
         """
-        # model = self.approximator.load_network()
         return self.policy.select_action(state, self.primary_network)
 
     def train(self, train_batch: object):
-        """Train a network with the Double Deep Q-Learning algorithm."""
-        # Train primary network
-        # Compute target Q value
-        # Perform gradient descent step on (Q*(st,at) - Q0(st,at))
-        self.approximator.train_network(train_batch, self.primary_network, self.target_network, self.gamma)
+        """Train a network with the Double Deep Q-Learning algorithm.
 
-        # Update target network
-        # 0' ← t * 0 + (1 - t) * 0'
+        :param train_batch: Set of transitions"""
+
+        self.approximator.train_network(train_batch, self.primary_network, self.target_network, self.gamma)
         self.copy_model()
 
     def copy_model(self):
-        """
-        Copy primary model weight to target model with tau value to update just a small bit.
+        """Copy primary model weight to target model with tau value to update just a small bit.
 
         Schrijf een functie die copy_model heet, deze voegt de policy en het target-network samen.
             Tau is hiervoor een input parameter die bepaalt hoeveel procent van het target-netwerk vervangen wordt door het policy netwerk.
             We doen dit minder vaak dan het trainen van het policy netwerk.
-            Maar dit gebeurt wel om de n stappen. N is een optimaliseerbare hyperparameter
+            Maar dit gebeurt wel om de n stappen. N is een optimaliseerbare hyperparameter"""
 
-        Returns:
-        """
         # 0' ← t * 0 + (1 - t) * 0'
         for target, primary in zip(self.target_network.parameters(), self.primary_network.parameters()):
             target.data.copy_(self.tau * primary.data + (1.0 - self.tau) * target.data)
 
-    def replay_memory(self):
-        """Replay stuff."""
-        pass
